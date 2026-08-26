@@ -72,6 +72,7 @@ import { InvoiceModal } from "@/components/lens-work/invoice-modal"
 import { LabelPrintModal } from "@/components/lens-work/label-print-modal"
 import { CancelReturnModal, getCancelAvailability, getReturnAvailability } from "@/components/lens-work/cancel-return-modal"
 import { toast } from "sonner"
+import { CarrierSelect } from "@/components/ui/carrier-select"
 
 // Replicate list page data generation to keep detail in sync
 const getListItemData = (numId: number) => {
@@ -332,6 +333,7 @@ export default function WorkDetailPage({
   const [labelCarrier, setLabelCarrier] = useState<string>("FedEx")
   // To Store: outbound registration state
   const [storeOutboundRegistered, setStoreOutboundRegistered] = useState(false)
+  const [outboundCarrier, setOutboundCarrier] = useState<string>("FedEx")
 
   // Check if editable based on status (Completed and Finalized are read-only)
   const isEditable = !["Completed", "Finalized"].includes(item.status)
@@ -616,8 +618,8 @@ export default function WorkDetailPage({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setOutboundConfirmOpen(true)}
-              disabled={storeOutboundRegistered}
+              onClick={() => { setOutboundCarrier("FedEx"); setOutboundConfirmOpen(true) }}
+              disabled={storeOutboundRegistered || workStatus !== "Outbound Inspection"}
               className="gap-1.5 bg-transparent h-7 text-xs px-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Package className="h-3.5 w-3.5" />
@@ -1617,6 +1619,12 @@ export default function WorkDetailPage({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-1">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground">
+                Carrier <span className="text-red-500">*</span>
+              </label>
+              <CarrierSelect value={outboundCarrier} onChange={setOutboundCarrier} />
+            </div>
             <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-3">
               <span className="font-medium text-foreground">{item.orderNumber}</span>
             </div>
@@ -1627,10 +1635,10 @@ export default function WorkDetailPage({
               <Button
                 size="sm"
                 onClick={() => {
-                  console.log("ERP Outbound Registration:", { orderId: item.id })
+                  console.log("ERP Outbound Registration:", { orderId: item.id, carrier: outboundCarrier })
                   setStoreOutboundRegistered(true)
                   setOutboundConfirmOpen(false)
-                  toast.success("Outbound registration completed. Order has been sent to TMS.")
+                  toast.success(`Outbound registration completed via ${outboundCarrier}. Order has been sent to TMS.`)
                 }}
                 className="h-8 text-xs px-4 gap-1.5"
               >
@@ -1652,22 +1660,14 @@ export default function WorkDetailPage({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-1">
-            <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-3">
-              <span className="font-medium text-foreground">{item.orderNumber}</span>
-            </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-foreground">
                 Carrier <span className="text-red-500">*</span>
               </label>
-              <select
-                value={labelCarrier}
-                onChange={(e) => setLabelCarrier(e.target.value)}
-                className="w-full h-10 px-3 pr-8 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_10px_center]"
-              >
-                <option value="">Select carrier</option>
-                <option value="FedEx">FedEx</option>
-                <option value="UPS">UPS</option>
-              </select>
+              <CarrierSelect value={labelCarrier} onChange={setLabelCarrier} />
+            </div>
+            <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-3">
+              <span className="font-medium text-foreground">{item.orderNumber}</span>
             </div>
             <p className="text-xs text-muted-foreground">
               This order will be sent to TMS for label registration. Do you want to proceed?

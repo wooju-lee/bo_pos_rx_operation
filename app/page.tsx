@@ -17,6 +17,7 @@ import { WorkTable, type WorkItem } from "@/components/lens-work/work-table"
 import { ProcessingStats } from "@/components/lens-work/processing-stats"
 import { InvoiceModal } from "@/components/lens-work/invoice-modal"
 import { PickingListModal } from "@/components/lens-work/picking-list-modal"
+import { CarrierSelect } from "@/components/ui/carrier-select"
 
 // Helper to generate sample data with correct distribution to match stats
 // Stats: (Basic) IIC Lab: 7, (Basic) Lab 1: 5, (Basic) Lab 2: 3, (Tint) IIC Lab: 9, (Tint) Lab 1: 4, (Tint) Lab 2: 2 = Total 30
@@ -327,6 +328,12 @@ export default function LensWorkManagement() {
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-1">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-foreground">
+                    Carrier <span className="text-red-500">*</span>
+                  </label>
+                  <CarrierSelect value={labelCarrier} onChange={setLabelCarrier} />
+                </div>
                 <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-3 space-y-1">
                   {labelRegSelectedItems.map((item) => {
                     const isEligible = item.status === "Outbound Inspection" && !labelRegisteredIds.has(item.id)
@@ -341,20 +348,6 @@ export default function LensWorkManagement() {
                       </div>
                     )
                   })}
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-foreground">
-                    Carrier <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={labelCarrier}
-                    onChange={(e) => setLabelCarrier(e.target.value)}
-                    className="w-full h-10 px-3 pr-8 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_10px_center]"
-                  >
-                    <option value="">Select carrier</option>
-                    <option value="FedEx">FedEx</option>
-                    <option value="UPS">UPS</option>
-                  </select>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Only <span className="font-semibold text-teal-600">Outbound Inspection</span> orders will be sent to TMS for label registration.
