@@ -48,7 +48,7 @@ export interface WorkItem {
   channel: "Online" | "Offline"
   storeCode: string
   storeName: string
-  status: "Pending" | "Inbound Inspection" | "In Progress" | "Re Do" | "Outbound Inspection" | "Outbound Inspection Completed" | "Completed" | "Finalized"
+  status: "Pending" | "Inbound Inspection" | "In Progress" | "Re Do" | "Outbound Inspection" | "Completed" | "Finalized"
   outboundRegistered?: boolean
   workType?: string
   processingPeriod?: string
@@ -113,7 +113,6 @@ const getStatusBadge = (status: WorkItem["status"]) => {
     "In Progress": "bg-[oklch(0.7_0.15_145)] text-white border-transparent",
     "Re Do": "bg-orange-500 text-white border-transparent",
     "Outbound Inspection": "bg-indigo-500 text-white border-transparent",
-    "Outbound Inspection Completed": "bg-teal-500 text-white border-transparent",
     Completed: "bg-[oklch(0.6_0.15_145)] text-white border-transparent",
     Finalized: "bg-transparent text-[oklch(0.5_0.12_145)] border-[oklch(0.7_0.15_145)]",
   }
@@ -137,7 +136,7 @@ const MANUAL_STATUSES = [
   "In Progress",
   "Re Do",
   "Outbound Inspection",
-  "Outbound Inspection Completed",
+  "Completed",
 ]
 
 export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPrint, onShippingTransmit, onExcelDownload, onWorkLabelPrint, onCreateShipment, onLabelRegistration, onLabelPrint, onBulkStatusChange, outboundRegisteredIds = new Set(), labelRegisteredIds = new Set() }: WorkTableProps) {
@@ -266,7 +265,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
         <div className="flex items-center gap-2">
           {activeTab === "customer" && (() => {
             const selectedData = filteredData.filter((item) => selectedItems.includes(item.id))
-            const hasEligible = selectedData.some((item) => item.status === "Outbound Inspection Completed" && !labelRegisteredIds.has(item.id))
+            const hasEligible = selectedData.some((item) => item.status === "Completed" && !labelRegisteredIds.has(item.id))
             return (
               <Button
                 variant="outline"
@@ -669,7 +668,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                 ))}
               </SelectContent>
             </Select>
-            {selectedNewStatus === "Outbound Inspection Completed" && (
+            {selectedNewStatus === "Outbound Inspection" && (
               <p className="text-xs text-indigo-500">
                 * Label Registration will be automatically processed via TMS.
               </p>

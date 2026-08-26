@@ -75,7 +75,7 @@ import { toast } from "sonner"
 
 // Replicate list page data generation to keep detail in sync
 const getListItemData = (numId: number) => {
-  const statuses = ["Pending", "Inbound Inspection", "In Progress", "Re Do", "Outbound Inspection", "Outbound Inspection Completed", "Completed", "Finalized"]
+  const statuses = ["Pending", "Inbound Inspection", "In Progress", "Re Do", "Outbound Inspection", "Completed", "Finalized"]
   const channels = ["Online", "Offline"]
   const stores = [
     { code: "US1001", name: "US_STORE_1" },
@@ -396,8 +396,8 @@ export default function WorkDetailPage({
     setWorkStatusSaveSuccess(true)
     setTimeout(() => setWorkStatusSaveSuccess(false), 2000)
 
-    // Auto label registration when status changes to "Outbound Inspection Completed" (To Customer only)
-    if (workStatus === "Outbound Inspection Completed" && savedValues.workStatus !== "Outbound Inspection Completed" && isCustomerTab && !labelRegistered) {
+    // Auto label registration when status changes to "Outbound Inspection" (To Customer only)
+    if (workStatus === "Outbound Inspection" && savedValues.workStatus !== "Outbound Inspection" && isCustomerTab && !labelRegistered) {
       console.log("Auto TMS Label Registration:", { orderId: item.id })
       setLabelRegistered(true)
       toast.success("Inspection completed — Label registration has been sent to TMS.")
@@ -411,7 +411,7 @@ export default function WorkDetailPage({
         setHistoryEntries((prev) => [{
           type: "status" as const,
           timestamp: ts2,
-          changes: [{ label: "Status", value: "Outbound Inspection Completed → Completed", badgeClass: "bg-blue-50 text-blue-700 border-blue-200" },
+          changes: [{ label: "Status", value: "Outbound Inspection → Completed", badgeClass: "bg-blue-50 text-blue-700 border-blue-200" },
                     { label: "TMS", value: "Tracking received from TMS", badgeClass: "bg-green-50 text-green-700 border-green-200" }],
         }, ...prev])
         toast.success("TMS tracking received — Status changed to Completed. Label Print is now available.")
@@ -506,7 +506,6 @@ export default function WorkDetailPage({
       "Inbound Inspection": "bg-[oklch(0.75_0.16_55)] text-white border-transparent",
       "In Progress": "bg-[oklch(0.7_0.15_145)] text-white border-transparent",
       "Re Do": "bg-orange-500 text-white border-transparent",
-      "Outbound Inspection Completed": "bg-teal-500 text-white border-transparent",
       "Outbound Inspection": "bg-indigo-500 text-white border-transparent",
       Completed: "bg-blue-100 text-blue-700 border-blue-300",
       Finalized:
@@ -1237,7 +1236,6 @@ export default function WorkDetailPage({
                         <SelectItem value="Inbound Inspection">Inbound Inspection</SelectItem>
                         <SelectItem value="In Progress">In Progress</SelectItem>
                         <SelectItem value="Re Do">Re Do</SelectItem>
-                        <SelectItem value="Outbound Inspection Completed">Outbound Inspection Completed</SelectItem>
                         <SelectItem value="Outbound Inspection">Outbound Inspection</SelectItem>
                         <SelectItem value="Completed" disabled>Completed</SelectItem>
                         <SelectItem value="Finalized" disabled>Finalized</SelectItem>

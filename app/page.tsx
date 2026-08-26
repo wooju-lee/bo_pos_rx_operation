@@ -24,7 +24,7 @@ const generateSampleData = (): WorkItem[] => {
   const items: WorkItem[] = []
   let id = 1
   
-  const statuses: WorkItem["status"][] = ["Pending", "Inbound Inspection", "In Progress", "Re Do", "Outbound Inspection", "Outbound Inspection Completed", "Completed", "Finalized"]
+  const statuses: WorkItem["status"][] = ["Pending", "Inbound Inspection", "In Progress", "Re Do", "Outbound Inspection", "Completed", "Finalized"]
   const channels: WorkItem["channel"][] = ["Online", "Offline"]
   const stores = [
     { code: "US1001", name: "US_STORE_1" },
@@ -167,8 +167,8 @@ export default function LensWorkManagement() {
     )
     toast.success(`${selectedItems.length} order(s) status changed to "${newStatus}".`)
 
-    // Auto label registration when bulk changing to Outbound Inspection Completed
-    if (newStatus === "Outbound Inspection Completed") {
+    // Auto label registration when bulk changing to Outbound Inspection
+    if (newStatus === "Outbound Inspection") {
       setLabelRegisteredIds((prev) => {
         const next = new Set(prev)
         selectedItems.forEach((item) => next.add(item.id))
@@ -186,9 +186,9 @@ export default function LensWorkManagement() {
   }
 
   const handleLabelRegistration = (selectedItems: WorkItem[]) => {
-    // Filter: only "Outbound Inspection Completed" items that are not already registered
+    // Filter: only "Outbound Inspection" items that are not already registered
     const eligible = selectedItems.filter(
-      (item) => item.status === "Outbound Inspection Completed" && !labelRegisteredIds.has(item.id)
+      (item) => item.status === "Outbound Inspection" && !labelRegisteredIds.has(item.id)
     )
     setLabelRegSelectedItems(eligible.length > 0 ? eligible : selectedItems)
     setLabelRegModalOpen(true)
@@ -196,10 +196,10 @@ export default function LensWorkManagement() {
 
   const handleLabelRegConfirm = () => {
     const eligible = labelRegSelectedItems.filter(
-      (item) => item.status === "Outbound Inspection Completed" && !labelRegisteredIds.has(item.id)
+      (item) => item.status === "Outbound Inspection" && !labelRegisteredIds.has(item.id)
     )
     if (eligible.length === 0) {
-      toast.error("No eligible items. Only 'Outbound Inspection Completed' status items can be registered.")
+      toast.error("No eligible items. Only 'Outbound Inspection' status items can be registered.")
       setLabelRegModalOpen(false)
       return
     }
@@ -323,7 +323,7 @@ export default function LensWorkManagement() {
               <div className="space-y-4 pt-1">
                 <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-3 space-y-1">
                   {labelRegSelectedItems.map((item) => {
-                    const isEligible = item.status === "Outbound Inspection Completed" && !labelRegisteredIds.has(item.id)
+                    const isEligible = item.status === "Outbound Inspection" && !labelRegisteredIds.has(item.id)
                     return (
                       <div key={item.id} className="flex items-center justify-between">
                         <span className={`font-medium ${isEligible ? "text-foreground" : "text-muted-foreground line-through"}`}>
@@ -337,10 +337,10 @@ export default function LensWorkManagement() {
                   })}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Only <span className="font-semibold text-teal-600">Outbound Inspection Completed</span> orders will be sent to TMS for label registration.
-                  {labelRegSelectedItems.filter((item) => item.status !== "Outbound Inspection Completed").length > 0 && (
+                  Only <span className="font-semibold text-teal-600">Outbound Inspection</span> orders will be sent to TMS for label registration.
+                  {labelRegSelectedItems.filter((item) => item.status !== "Outbound Inspection").length > 0 && (
                     <span className="block mt-1 text-orange-500">
-                      {labelRegSelectedItems.filter((item) => item.status !== "Outbound Inspection Completed").length} item(s) will be skipped (status not eligible).
+                      {labelRegSelectedItems.filter((item) => item.status !== "Outbound Inspection").length} item(s) will be skipped (status not eligible).
                     </span>
                   )}
                 </p>
