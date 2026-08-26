@@ -265,7 +265,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
         <div className="flex items-center gap-2">
           {activeTab === "customer" && (() => {
             const selectedData = filteredData.filter((item) => selectedItems.includes(item.id))
-            const hasEligible = selectedData.some((item) => item.status === "Completed" && !labelRegisteredIds.has(item.id))
+            const hasEligible = selectedData.some((item) => item.status === "Outbound Inspection" && !labelRegisteredIds.has(item.id))
             return (
               <Button
                 variant="outline"

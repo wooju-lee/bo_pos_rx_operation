@@ -120,6 +120,7 @@ export default function LensWorkManagement() {
   const [labelRegSelectedItems, setLabelRegSelectedItems] = useState<WorkItem[]>([])
   const [labelPrintModalOpen, setLabelPrintModalOpen] = useState(false)
   const [labelPrintItem, setLabelPrintItem] = useState<WorkItem | null>(null)
+  const [labelCarrier, setLabelCarrier] = useState<string>("FedEx")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const handleSearch = () => {
@@ -191,6 +192,7 @@ export default function LensWorkManagement() {
       (item) => item.status === "Outbound Inspection" && !labelRegisteredIds.has(item.id)
     )
     setLabelRegSelectedItems(eligible.length > 0 ? eligible : selectedItems)
+    setLabelCarrier("FedEx")
     setLabelRegModalOpen(true)
   }
 
@@ -203,12 +205,16 @@ export default function LensWorkManagement() {
       setLabelRegModalOpen(false)
       return
     }
+    if (!labelCarrier) {
+      toast.error("Please select a carrier.")
+      return
+    }
     setLabelRegisteredIds((prev) => {
       const next = new Set(prev)
       eligible.forEach((item) => next.add(item.id))
       return next
     })
-    toast.success(`Label registration sent to TMS for ${eligible.length} order(s).`)
+    toast.success(`Label registration sent to TMS for ${eligible.length} order(s) via ${labelCarrier}.`)
     setLabelRegModalOpen(false)
   }
 
@@ -336,6 +342,20 @@ export default function LensWorkManagement() {
                     )
                   })}
                 </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-foreground">
+                    Carrier <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={labelCarrier}
+                    onChange={(e) => setLabelCarrier(e.target.value)}
+                    className="w-full h-10 px-3 pr-8 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_10px_center]"
+                  >
+                    <option value="">Select carrier</option>
+                    <option value="FedEx">FedEx</option>
+                    <option value="UPS">UPS</option>
+                  </select>
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Only <span className="font-semibold text-teal-600">Outbound Inspection</span> orders will be sent to TMS for label registration.
                   {labelRegSelectedItems.filter((item) => item.status !== "Outbound Inspection").length > 0 && (
@@ -348,6 +368,7 @@ export default function LensWorkManagement() {
                   <Button
                     size="sm"
                     onClick={handleLabelRegConfirm}
+                    disabled={!labelCarrier}
                     className="h-8 text-xs px-4 gap-1.5"
                   >
                     <Truck className="h-3.5 w-3.5" />

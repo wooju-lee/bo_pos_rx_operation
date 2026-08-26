@@ -329,6 +329,7 @@ export default function WorkDetailPage({
   const [outboundConfirmOpen, setOutboundConfirmOpen] = useState(false)
   const [labelRegConfirmOpen, setLabelRegConfirmOpen] = useState(false)
   const [labelRegistered, setLabelRegistered] = useState(false)
+  const [labelCarrier, setLabelCarrier] = useState<string>("FedEx")
   // To Store: outbound registration state
   const [storeOutboundRegistered, setStoreOutboundRegistered] = useState(false)
 
@@ -592,7 +593,7 @@ export default function WorkDetailPage({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setLabelRegConfirmOpen(true)}
+              onClick={() => { setLabelCarrier("FedEx"); setLabelRegConfirmOpen(true) }}
               disabled={labelRegistered || ["Completed", "Finalized"].includes(workStatus)}
               className="gap-1.5 bg-transparent h-7 text-xs px-2.5 border-indigo-300 text-indigo-600 hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -1654,20 +1655,35 @@ export default function WorkDetailPage({
             <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-3">
               <span className="font-medium text-foreground">{item.orderNumber}</span>
             </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground">
+                Carrier <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={labelCarrier}
+                onChange={(e) => setLabelCarrier(e.target.value)}
+                className="w-full h-10 px-3 pr-8 text-xs border border-input rounded-md bg-background focus:outline-none focus:ring-1 focus:ring-ring appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_10px_center]"
+              >
+                <option value="">Select carrier</option>
+                <option value="FedEx">FedEx</option>
+                <option value="UPS">UPS</option>
+              </select>
+            </div>
             <p className="text-xs text-muted-foreground">
               This order will be sent to TMS for label registration. Do you want to proceed?
             </p>
             <div className="flex justify-end">
               <Button
                 size="sm"
+                disabled={!labelCarrier}
                 onClick={() => {
                   console.log("TMS Label Registration:", {
                     orderId: item.id,
+                    carrier: labelCarrier,
                   })
                   setLabelRegConfirmOpen(false)
-                  // To Customer: TMS 전달 완료 토스트 → 버튼 비활성화
                   setLabelRegistered(true)
-                  toast.success("Label registration has been sent to TMS successfully.")
+                  toast.success(`Label registration has been sent to TMS via ${labelCarrier}.`)
                 }}
                 className="h-8 text-xs px-4 gap-1.5"
               >
