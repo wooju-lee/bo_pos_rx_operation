@@ -740,25 +740,21 @@ export default function WorkDetailPage({
                 </CardHeader>
                 <CardContent className="pt-0 px-3 pb-2.5">
                   {/* Order Date & Store Info - table style */}
-                  <div className="border rounded-md overflow-hidden mb-3">
-                    <table className="w-full text-xs border-collapse">
-                      <tbody>
-                        <tr className="border-b border-[#f0f0f0]">
-                          <th className="bg-[#f7f8fa] px-4 py-2.5 text-left text-[11px] font-semibold text-[#555] w-[120px] border-r border-[#eee]">Order Date</th>
-                          <td className="px-4 py-2.5 text-[12px] font-medium text-[#222]">{item.orderDate}</td>
-                        </tr>
-                        <tr className="border-b border-[#f0f0f0]">
-                          <th className="bg-[#f7f8fa] px-4 py-2.5 text-left text-[11px] font-semibold text-[#555] w-[120px] border-r border-[#eee]">Store Info</th>
-                          <td className="px-4 py-2.5 text-[12px] font-medium text-[#222]">{item.storeCode} / {item.storeName}</td>
-                        </tr>
-                        {item.orderType === "Pre-order" && item.launchDate && (
-                          <tr>
-                            <th className="bg-[#f7f8fa] px-4 py-2.5 text-left text-[11px] font-semibold text-purple-500 w-[120px] border-r border-[#eee]">Launch Date</th>
-                            <td className="px-4 py-2.5 text-[12px] font-medium text-[#222]">{item.launchDate}</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                  <div className="mb-3 px-1 space-y-2">
+                    <div className="flex items-center">
+                      <span className="text-[11px] font-semibold text-[#888] w-[100px] shrink-0">Order Date</span>
+                      <span className="text-[12px] font-medium text-[#222]">{item.orderDate}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-[11px] font-semibold text-[#888] w-[100px] shrink-0">Store Info</span>
+                      <span className="text-[12px] font-medium text-[#222]">{item.storeCode} / {item.storeName}</span>
+                    </div>
+                    {item.orderType === "Pre-order" && item.launchDate && (
+                      <div className="flex items-center">
+                        <span className="text-[11px] font-semibold text-purple-500 w-[100px] shrink-0">Launch Date</span>
+                        <span className="text-[12px] font-medium text-[#222]">{item.launchDate}</span>
+                      </div>
+                    )}
                   </div>
                   {/* Products Table */}
                   <Table>
