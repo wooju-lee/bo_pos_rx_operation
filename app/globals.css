@@ -131,5 +131,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    zoom: 0.8;
   }
 }

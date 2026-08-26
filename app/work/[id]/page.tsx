@@ -36,6 +36,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { AppHeader } from "@/components/app-header"
+import { AppSidebar } from "@/components/app-sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -231,6 +232,7 @@ export default function WorkDetailPage({
 }) {
   const { id } = use(params)
   const router = useRouter()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const searchParams = useSearchParams()
   const tab = searchParams.get("tab") as "customer" | "store" | null
   const isCustomerTab = tab === "customer"
@@ -268,6 +270,8 @@ export default function WorkDetailPage({
 
   // Image viewer state
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [previewFile, setPreviewFile] = useState<{ id: string; name: string; url: string; type: string } | null>(null)
+  const [previewZoom, setPreviewZoom] = useState(1)
 
   // Prescription view states
   const [showPrescriptionPopup, setShowPrescriptionPopup] = useState(false)
@@ -520,11 +524,14 @@ export default function WorkDetailPage({
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <div className="flex-1 flex flex-col overflow-hidden w-full">
-        <AppHeader />
+    <div className="bg-[#f8f8f8] min-h-screen text-[#222] text-[13px]">
+      <AppHeader onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
+      <AppSidebar collapsed={sidebarCollapsed} />
 
-        <main className="flex-1 overflow-y-auto p-4">
+      <main
+        className="min-h-[calc(100vh-64px)] px-6 py-4 transition-[margin-left] duration-[250ms] ease-in-out"
+        style={{ marginLeft: sidebarCollapsed ? 0 : 300, marginTop: 64 }}
+      >
           {/* Back to List */}
           <button
             onClick={() => router.push("/")}
@@ -695,19 +702,21 @@ export default function WorkDetailPage({
                         )}
                       </div>
                     </div>
-                    {item.channel !== "Online" && (
-                      <div className="mt-2.5 pt-2.5 border-t border-dashed flex items-center justify-between">
-                        <span className="text-[11px] text-muted-foreground">EXP</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[11px]">{item.membership.expDate}</span>
-                          {item.membership.isActive && (
-                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-300 text-green-600">
-                              Active
-                            </Badge>
-                          )}
-                        </div>
+                    <div className="mt-2.5 pt-2.5 border-t border-dashed flex items-center justify-between">
+                      <span className="text-[11px] text-muted-foreground">EXP</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px]">{item.membership.expDate}</span>
+                        {item.membership.isActive ? (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-green-300 text-green-600">
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-red-300 text-red-600">
+                            Inactive
+                          </Badge>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -730,22 +739,26 @@ export default function WorkDetailPage({
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0 px-3 pb-2.5">
-                  {/* Order Date & Store Info */}
-                  <div className="space-y-1 text-xs mb-2 px-1">
-                    <div className="flex items-center gap-4">
-                      <span className="text-muted-foreground">Order Date</span>
-                      <span className="font-medium">{item.orderDate}</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-muted-foreground">Store Info</span>
-                      <span className="font-medium">{item.storeCode} / {item.storeName}</span>
-                    </div>
-                    {item.orderType === "Pre-order" && item.launchDate && (
-                      <div className="flex items-center gap-4">
-                        <span className="text-purple-500">Launch Date</span>
-                        <span className="font-medium">{item.launchDate}</span>
-                      </div>
-                    )}
+                  {/* Order Date & Store Info - table style */}
+                  <div className="border rounded-md overflow-hidden mb-3">
+                    <table className="w-full text-xs border-collapse">
+                      <tbody>
+                        <tr className="border-b border-[#f0f0f0]">
+                          <th className="bg-[#f7f8fa] px-4 py-2.5 text-left text-[11px] font-semibold text-[#555] w-[120px] border-r border-[#eee]">Order Date</th>
+                          <td className="px-4 py-2.5 text-[12px] font-medium text-[#222]">{item.orderDate}</td>
+                        </tr>
+                        <tr className="border-b border-[#f0f0f0]">
+                          <th className="bg-[#f7f8fa] px-4 py-2.5 text-left text-[11px] font-semibold text-[#555] w-[120px] border-r border-[#eee]">Store Info</th>
+                          <td className="px-4 py-2.5 text-[12px] font-medium text-[#222]">{item.storeCode} / {item.storeName}</td>
+                        </tr>
+                        {item.orderType === "Pre-order" && item.launchDate && (
+                          <tr>
+                            <th className="bg-[#f7f8fa] px-4 py-2.5 text-left text-[11px] font-semibold text-purple-500 w-[120px] border-r border-[#eee]">Launch Date</th>
+                            <td className="px-4 py-2.5 text-[12px] font-medium text-[#222]">{item.launchDate}</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                   {/* Products Table */}
                   <Table>
@@ -853,7 +866,7 @@ export default function WorkDetailPage({
                     </table>
                   </div>
 
-                  {/* Attached Files */}
+                  {/* Attached Files - Left list + Right preview */}
                   {item.attachments.length > 0 && (
                     <div className="mt-3">
                       <div className="flex items-center gap-1.5 mb-2">
@@ -861,29 +874,85 @@ export default function WorkDetailPage({
                         <span className="text-xs font-medium">Attached Files</span>
                         <Badge variant="secondary" className="text-[10px] ml-1 px-1.5 py-0">{item.attachments.length}</Badge>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {item.attachments.map((file) => (
-                          <button
-                            key={file.id}
-                            onClick={() => file.type === "image" && setSelectedImage(file.url)}
-                            className="flex items-center gap-2.5 p-2.5 border rounded-md hover:bg-muted/50 hover:border-primary/30 transition-all text-left group"
-                          >
-                            <div className={`h-8 w-8 rounded flex items-center justify-center shrink-0 ${
-                              file.type === "image" ? "bg-blue-50" : "bg-red-50"
-                            }`}>
-                              {file.type === "image" ? (
-                                <ImageIcon className="h-4 w-4 text-blue-500" />
-                              ) : (
-                                <FileText className="h-4 w-4 text-red-500" />
-                              )}
+                      <div className="flex border rounded-lg overflow-hidden" style={{ minHeight: 320 }}>
+                        {/* Left: File list */}
+                        <div className="w-[200px] border-r bg-[#fafafa] shrink-0">
+                          {item.attachments.map((file) => (
+                            <button
+                              key={file.id}
+                              onClick={() => file.type === "image" && setPreviewFile(file)}
+                              className={`flex items-center gap-2 w-full px-3 py-2.5 text-left transition-colors border-b border-[#f0f0f0] last:border-b-0 ${
+                                previewFile?.id === file.id
+                                  ? "bg-[#FFF3E0] text-[#ff6b35]"
+                                  : "hover:bg-[#f0f0f0] text-[#333]"
+                              }`}
+                            >
+                              <div className={`h-7 w-7 rounded flex items-center justify-center shrink-0 ${
+                                file.type === "image" ? "bg-blue-50" : "bg-red-50"
+                              }`}>
+                                {file.type === "image" ? (
+                                  <ImageIcon className="h-3.5 w-3.5 text-blue-500" />
+                                ) : (
+                                  <FileText className="h-3.5 w-3.5 text-red-500" />
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[11px] font-medium truncate block">{file.name}</span>
+                                <span className="text-[9px] text-muted-foreground">{file.type === "image" ? "Image" : "PDF"}</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                        {/* Right: Preview */}
+                        <div className="flex-1 flex flex-col bg-white">
+                          {previewFile ? (
+                            <>
+                              {/* Preview toolbar */}
+                              <div className="flex items-center justify-between px-3 py-1.5 border-b bg-[#fafafa]">
+                                <span className="text-[11px] text-muted-foreground truncate">{previewFile.name}</span>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => setPreviewZoom((z) => Math.max(0.3, z - 0.2))}
+                                    className="w-6 h-6 flex items-center justify-center rounded hover:bg-[#e8e8e8] text-[#555] text-sm"
+                                    title="Zoom out"
+                                  >
+                                    −
+                                  </button>
+                                  <span className="text-[10px] text-muted-foreground w-10 text-center">{Math.round(previewZoom * 100)}%</span>
+                                  <button
+                                    onClick={() => setPreviewZoom((z) => Math.min(3, z + 0.2))}
+                                    className="w-6 h-6 flex items-center justify-center rounded hover:bg-[#e8e8e8] text-[#555] text-sm"
+                                    title="Zoom in"
+                                  >
+                                    +
+                                  </button>
+                                  <div className="w-px h-4 bg-[#ddd] mx-1" />
+                                  <button
+                                    onClick={() => window.open(previewFile.url, "_blank")}
+                                    className="flex items-center gap-1 px-2 h-6 rounded hover:bg-[#e8e8e8] text-[11px] text-[#555]"
+                                    title="Open in new window"
+                                  >
+                                    <ExternalLink className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              </div>
+                              {/* Image area */}
+                              <div className="flex-1 flex items-center justify-center p-4 overflow-auto bg-[#f5f5f5]">
+                                <img
+                                  src={previewFile.url}
+                                  alt={previewFile.name}
+                                  className="object-contain rounded"
+                                  style={{ transform: `scale(${previewZoom})`, transformOrigin: "center", maxHeight: 400, transition: "transform 0.15s" }}
+                                  draggable={false}
+                                />
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex-1 flex items-center justify-center text-[11px] text-muted-foreground">
+                              Select a file to preview
                             </div>
-                            <div className="min-w-0 flex-1">
-                              <span className="text-xs font-medium truncate block group-hover:text-primary transition-colors">{file.name}</span>
-                              <span className="text-[10px] text-muted-foreground">{file.type === "image" ? "Image File" : "PDF Document"}</span>
-                            </div>
-                            <Eye className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                          </button>
-                        ))}
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1478,13 +1547,7 @@ export default function WorkDetailPage({
 
             </div>
           </div>
-        </main>
-
-        <footer className="px-6 py-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-card">
-          <span>© 2025 IICOMBINED CO., LTD. ALL RIGHTS RESERVED.</span>
-          <span>V.1.0.0</span>
-        </footer>
-      </div>
+      </main>
 
       {/* Image Viewer Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>

@@ -112,6 +112,7 @@ const getStatusBadge = (status: WorkItem["status"]) => {
     "Inbound Inspection": "bg-[oklch(0.75_0.16_55)] text-white border-transparent",
     "In Progress": "bg-[oklch(0.7_0.15_145)] text-white border-transparent",
     "Re Do": "bg-orange-500 text-white border-transparent",
+    "Outbound Inspection": "bg-indigo-500 text-white border-transparent",
     "Outbound Inspection Completed": "bg-teal-500 text-white border-transparent",
     Completed: "bg-[oklch(0.6_0.15_145)] text-white border-transparent",
     Finalized: "bg-transparent text-[oklch(0.5_0.12_145)] border-[oklch(0.7_0.15_145)]",
@@ -341,6 +342,20 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
             <Printer className="h-4 w-4" />
             Picking List
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              const selected = filteredData.filter((item) => selectedItems.includes(item.id))
+              if (selected.length > 0) {
+                onInvoicePrint(selected[0])
+              }
+            }}
+            disabled={selectedItems.length === 0}
+            className="gap-2 border-border bg-background hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <FileText className="h-4 w-4" />
+            Invoice Print
+          </Button>
           <Popover open={downloadPopoverOpen} onOpenChange={setDownloadPopoverOpen}>
             <PopoverTrigger asChild>
               <Button 
@@ -394,6 +409,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                 onCheckedChange={handleSelectAll}
               />
             </TableHead>
+            {/* 1. 주문일 */}
             <TableHead className="text-center">
               <button
                 onClick={() => handleSort("orderDate")}
@@ -403,8 +419,9 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                 {getSortIcon("orderDate")}
               </button>
             </TableHead>
+            {/* 2. 승인일 */}
             <TableHead className="text-center">
-              <button 
+              <button
                 onClick={() => handleSort("approvalDate")}
                 className="flex items-center justify-center w-full hover:text-primary transition-colors"
               >
@@ -412,32 +429,42 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                 {getSortIcon("approvalDate")}
               </button>
             </TableHead>
+            {/* 3. ETA */}
             <TableHead className="text-center">Work ETA</TableHead>
+            {/* 4. 작업 상태 */}
+            <TableHead className="text-center">Work Status</TableHead>
+            {/* 5. 채널 */}
             <TableHead className="text-center">Channel</TableHead>
-            <TableHead className="text-center py-4">
-              <div className="leading-relaxed">
-                Order No. #<br />
-                <span className="text-muted-foreground">(Number #)</span>
-              </div>
-            </TableHead>
-            <TableHead className="text-center">Order Tag</TableHead>
+            {/* 6. 주문타입 */}
+            <TableHead className="text-center">Order Type</TableHead>
+            {/* 7. 주문ID */}
+            <TableHead className="text-center">Order ID</TableHead>
+            {/* 8. 인보이스 넘버 */}
+            <TableHead className="text-center">Invoice No.</TableHead>
+            {/* 9. 스토어 정보 */}
             <TableHead className="text-center">
               Store Info
               <br />
               <span className="text-xs text-muted-foreground">(Code / Name)</span>
             </TableHead>
-            <TableHead className="text-center">Work Status</TableHead>
+            {/* 10. 취소 / 반품 상태 */}
             <TableHead className="text-center">Cancel / Refund</TableHead>
+            {/* 11. 작업 타입 */}
             <TableHead className="text-center">Work Type</TableHead>
+            {/* 12. 작업 기간 */}
             <TableHead className="text-center">Processing Period</TableHead>
+            {/* 13. 작업자 */}
             <TableHead className="text-center">Worker</TableHead>
+            {/* 14. 인보이스 출력 */}
             <TableHead className="text-center">Invoice</TableHead>
+            {/* 15. 피킹리스트 출력 */}
             <TableHead className="text-center">Picking List</TableHead>
+            {/* 16. 리드타임 */}
             <TableHead className="text-center">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <button
                       onClick={() => handleSort("leadTime")}
                       className="flex items-center justify-center w-full hover:text-primary transition-colors"
                     >
@@ -452,8 +479,9 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                 </Tooltip>
               </TooltipProvider>
             </TableHead>
+            {/* 17. 완료일 */}
             <TableHead className="text-center">
-              <button 
+              <button
                 onClick={() => handleSort("completionDate")}
                 className="flex items-center justify-center w-full hover:text-primary transition-colors"
               >
@@ -472,48 +500,56 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                   onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
                 />
               </TableCell>
+              {/* 1. 주문일 */}
               <TableCell className="text-center text-sm">
                 {item.orderDate}
               </TableCell>
+              {/* 2. 승인일 */}
               <TableCell className="text-center text-sm">
                 {item.approvalDate || item.orderDate}
               </TableCell>
+              {/* 3. ETA */}
               <TableCell className="text-center text-sm whitespace-nowrap">
                 {item.workEta || "-"}
               </TableCell>
+              {/* 4. 작업 상태 */}
+              <TableCell className="text-center">
+                {getStatusBadge(item.status)}
+              </TableCell>
+              {/* 5. 채널 */}
               <TableCell className="text-center">
                 <div className="flex items-center justify-center gap-2">
                   <span className={`h-2 w-2 rounded-full ${item.channel === "Online" ? "bg-[oklch(0.7_0.15_145)]" : "bg-gray-400"}`} />
                   {item.channel}
                 </div>
               </TableCell>
-              <TableCell className="text-center">
-                <div className="flex flex-col items-center">
-                  <span className="text-primary font-medium underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onDetailClick(item, activeTab); }}>
-                    {item.orderNumber}
-                  </span>
-                  <span className="text-muted-foreground">
-                    ({item.number || "-"})
-                  </span>
-                </div>
-              </TableCell>
+              {/* 6. 주문타입 */}
               <TableCell className="text-center text-sm">
-                <Badge 
-                  variant="outline" 
-                  className={item.orderType === "Pre-order" 
-                    ? "bg-purple-50 text-purple-700 border-purple-200" 
+                <Badge
+                  variant="outline"
+                  className={item.orderType === "Pre-order"
+                    ? "bg-purple-50 text-purple-700 border-purple-200"
                     : "bg-gray-50 text-gray-600 border-gray-200"
                   }
                 >
                   {item.orderType}
                 </Badge>
               </TableCell>
+              {/* 7. 주문ID */}
+              <TableCell className="text-center">
+                <span className="text-primary font-medium underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onDetailClick(item, activeTab); }}>
+                  {item.orderNumber}
+                </span>
+              </TableCell>
+              {/* 8. 인보이스 넘버 */}
+              <TableCell className="text-center text-sm text-muted-foreground">
+                {item.number || "-"}
+              </TableCell>
+              {/* 9. 스토어 정보 */}
               <TableCell className="text-center text-sm">
                 {item.storeCode} / {item.storeName}
               </TableCell>
-              <TableCell className="text-center">
-                {getStatusBadge(item.status)}
-              </TableCell>
+              {/* 10. 취소 / 반품 상태 */}
               <TableCell className="text-center text-sm">
                 {item.cancelReturnStatus === "Cancel" ? (
                   <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 px-3 py-1 font-medium">
@@ -527,15 +563,19 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                   <span className="text-muted-foreground">-</span>
                 )}
               </TableCell>
+              {/* 11. 작업 타입 */}
               <TableCell className="text-center text-sm">
                 {item.workType || "-"}
               </TableCell>
+              {/* 12. 작업 기간 */}
               <TableCell className="text-center text-sm">
                 {item.processingPeriod || "-"}
               </TableCell>
+              {/* 13. 작업자 */}
               <TableCell className="text-center text-sm">
                 {item.assignee || "-"}
               </TableCell>
+              {/* 14. 인보이스 출력 */}
               <TableCell className="text-center">
                 <Button
                   variant="outline"
@@ -547,6 +587,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                   Print
                 </Button>
               </TableCell>
+              {/* 15. 피킹리스트 출력 */}
               <TableCell className="text-center">
                 <Button
                   variant="outline"
@@ -558,6 +599,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                   Print
                 </Button>
               </TableCell>
+              {/* 16. 리드타임 */}
               <TableCell className="text-center">
                 {item.leadTime ? (
                   <span className="text-sm text-foreground">{item.leadTime} days</span>
@@ -568,7 +610,7 @@ export function WorkTable({ data, onDetailClick, onInvoicePrint, onPickingListPr
                   )
                 )}
               </TableCell>
-
+              {/* 17. 완료일 */}
               <TableCell className="text-center text-sm">
                 {item.completionDate || "-"}
               </TableCell>

@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { OutboundModal } from "@/components/lens-work/outbound-modal"
 import { LabelPrintModal } from "@/components/lens-work/label-print-modal"
 import { AppHeader } from "@/components/app-header"
+import { AppSidebar } from "@/components/app-sidebar"
 import { FilterSection } from "@/components/lens-work/filter-section"
 import { WorkTable, type WorkItem } from "@/components/lens-work/work-table"
 import { ProcessingStats } from "@/components/lens-work/processing-stats"
@@ -119,6 +120,7 @@ export default function LensWorkManagement() {
   const [labelRegSelectedItems, setLabelRegSelectedItems] = useState<WorkItem[]>([])
   const [labelPrintModalOpen, setLabelPrintModalOpen] = useState(false)
   const [labelPrintItem, setLabelPrintItem] = useState<WorkItem | null>(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const handleSearch = () => {
     console.log("[v0] Search triggered")
@@ -211,37 +213,32 @@ export default function LensWorkManagement() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="bg-[#f8f8f8] min-h-screen text-[#222] text-[13px]">
+      {/* Header */}
+      <AppHeader onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
+
+      {/* Sidebar */}
+      <AppSidebar collapsed={sidebarCollapsed} />
+
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden w-full">
-        {/* Header */}
-        <AppHeader />
+      <main
+        className="min-h-[calc(100vh-64px)] px-6 transition-[margin-left] duration-[250ms] ease-in-out"
+        style={{ marginLeft: sidebarCollapsed ? 0 : 300, marginTop: 64 }}
+      >
+        {/* Breadcrumb */}
+        <div className="flex items-center pt-8 pl-3 text-sm">
+          <span className="text-[rgba(115,115,115,1)]">Rx (LMS)</span>
+          <span className="mx-2 text-[rgba(0,0,0,0.87)]">&rsaquo;</span>
+          <span className="text-[rgba(217,119,6,1)]">Lens Work Management</span>
+        </div>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm mb-4">
-            <span className="text-muted-foreground">Rx (LMS)</span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Lens Work Management</span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <span className="text-primary font-medium">Lens Work Management</span>
-          </nav>
-
-          {/* Page Title */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold">Lens Work Management</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              View and manage RX order list from online/offline channels.
-            </p>
-          </div>
+        {/* Page Title */}
+        <div className="flex items-center justify-between pt-[18px] pb-6 pl-3">
+          <h1 className="text-[25px] font-bold text-[#222]">Lens Work Management</h1>
+        </div>
 
           {/* Filter Section */}
-          <div className="mb-6">
-            <FilterSection
-              onSearch={handleSearch}
-            />
-          </div>
+          <FilterSection onSearch={handleSearch} />
 
           {/* Processing Stats - New Section */}
           <div className="mb-6">
@@ -360,14 +357,7 @@ export default function LensWorkManagement() {
               </div>
             </DialogContent>
           </Dialog>
-        </main>
-
-        {/* Footer */}
-        <footer className="px-6 py-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-card">
-          <span>© 2025 IICOMBINED CO., LTD. ALL RIGHTS RESERVED.</span>
-          <span>V.1.0.0</span>
-        </footer>
-      </div>
+      </main>
     </div>
   )
 }

@@ -1,50 +1,41 @@
-import { Clock } from "lucide-react"
-
 interface LabStatCard {
   count: number
   name: string
   description: string
+  color: string
 }
 
-const statsData: LabStatCard[] = [
-  { count: 7, name: "(Basic) IIC Lab", description: "Standard processing 7 ~ 10 D" },
-  { count: 5, name: "(Basic) Lab 1", description: "Additional time 10 ~ 14 D" },
-  { count: 3, name: "(Basic) Lab 2", description: "Additional time 12 ~ 16 D" },
-  { count: 9, name: "(Tint) IIC Lab", description: "Standard processing 9 ~ 12 D" },
-  { count: 4, name: "(Tint) Lab 1", description: "Standard processing 12 ~ 16 D" },
-  { count: 2, name: "(Tint) Lab 2", description: "Standard processing 14 ~ 18 D" },
+const statsData: LabStatCard[][] = [
+  [
+    { count: 0, name: "(Basic) IIC Lab", description: "Standard processing 7 ~ 10 D", color: "#ff6b35" },
+    { count: 1, name: "(Basic) Outsource Lab1", description: "Additional time 10 ~ 14 D", color: "#ff6b35" },
+    { count: 0, name: "(Basic) Outsource Lab2", description: "Additional time 12 ~ 16 D", color: "#ff6b35" },
+  ],
+  [
+    { count: 0, name: "(Tint) IIC Lab", description: "Standard processing 9 ~ 12 D", color: "#4caf50" },
+    { count: 0, name: "(Tint) Lab 1", description: "Standard processing 12 ~ 16 D", color: "#4caf50" },
+    { count: 0, name: "(Tint) Lab 2", description: "Standard processing 14 ~ 18 D", color: "#4caf50" },
+  ],
 ]
 
 export function ProcessingStats() {
   return (
-    <div className="bg-muted/30 rounded-lg border border-border p-4">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <Clock className="h-4 w-4 text-muted-foreground" />
-        <h3 className="text-sm text-muted-foreground">
-          <span className="font-semibold text-foreground">Work Status</span>
-          <span className="ml-1">(View order quantity statistics by processing period based on the list.)</span>
-        </h3>
-      </div>
-
-      {/* Stats Cards - Horizontal Layout */}
-      <div className="grid grid-cols-6 gap-3">
-        {statsData.map((stat) => (
-          <div
-            key={stat.name}
-            className="bg-card rounded-lg border border-border p-4"
-          >
-            <div className="flex items-start gap-2 mb-2">
-              <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
-              <div>
-                <div className="text-2xl font-bold text-foreground">{stat.count}</div>
-                <div className="text-sm font-medium text-foreground mt-1">{stat.name}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">{stat.description}</div>
-              </div>
+    <div className="mb-6">
+      {statsData.map((row, rowIdx) => (
+        <div key={rowIdx} className="grid grid-cols-3 gap-4 mb-4 last:mb-0">
+          {row.map((stat) => (
+            <div
+              key={stat.name}
+              className="bg-white rounded-lg border border-[#e0e0e0] px-5 py-4"
+              style={{ borderLeft: `4px solid ${stat.color}` }}
+            >
+              <div className="text-[22px] font-bold text-[#222] mb-1">{stat.count}</div>
+              <div className="text-[13px] font-semibold text-[#222]">{stat.name}</div>
+              <div className="text-[11px] text-[#999] mt-0.5">{stat.description}</div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
 }
