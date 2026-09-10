@@ -1,34 +1,17 @@
 import React from "react"
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import { Toaster } from '@/components/ui/sonner'
-import './globals.css'
+import type { Metadata } from "next"
+import { Geist, Geist_Mono } from "next/font/google"
+import { Toaster } from "@/components/ui/sonner"
+import { AppHeader } from "@/components/app-header"
+import { TabNav } from "@/components/tab-nav"
+import "./globals.css"
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const _geist = Geist({ subsets: ["latin"] })
+const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: 'IIC_BO - 렌즈 작업 관리',
-  description: 'RX 렌즈 작업 관리 백오피스 시스템',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
+  title: "IIC POS - Rx Operation",
+  description: "POS Rx Operation Management",
 }
 
 export default function RootLayout({
@@ -37,11 +20,22 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko">
-      <body className={`font-sans antialiased`}>
-        {children}
-        <Toaster position="top-right" toastOptions={{ classNames: { success: "!bg-green-50 !text-green-800 !border-green-200", error: "!bg-red-50 !text-red-800 !border-red-200" } }} />
-        <Analytics />
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased">
+        <AppHeader />
+        <TabNav />
+        <main className="mt-[112px] px-8 py-6 min-h-[calc(100vh-112px)] bg-[#f5f5f5]">
+          {children}
+        </main>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            classNames: {
+              success: "!bg-green-50 !text-green-800 !border-green-200",
+              error: "!bg-red-50 !text-red-800 !border-red-200",
+            },
+          }}
+        />
       </body>
     </html>
   )

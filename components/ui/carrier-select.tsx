@@ -34,7 +34,7 @@ export function CarrierSelect({ value, onChange }: CarrierSelectProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`w-full h-10 px-3 pr-8 text-xs text-left rounded-md flex items-center transition-colors ${
+        className={`w-full h-8 px-2.5 pr-7 text-[12px] text-left rounded flex items-center transition-colors ${
           open
             ? "border-2 border-orange-400 bg-orange-50"
             : "border border-input bg-white"
@@ -57,7 +57,7 @@ export function CarrierSelect({ value, onChange }: CarrierSelectProps) {
                 onChange(carrier.value)
                 setOpen(false)
               }}
-              className={`w-full text-left px-3 py-2.5 text-xs border-b last:border-b-0 border-gray-100 transition-colors ${
+              className={`w-full text-left px-2.5 py-2 text-[12px] border-b last:border-b-0 border-gray-100 transition-colors ${
                 value === carrier.value
                   ? "bg-gray-50 font-medium text-foreground"
                   : "bg-white text-foreground hover:bg-gray-50"

@@ -129,6 +129,56 @@
   * {
     @apply border-border outline-ring/50;
   }
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+    font-family: 'Inter', sans-serif;
+  }
+  input[type="date"]::-webkit-datetime-edit-year-field::after {
+    content: "/";
+  }
+  input[type="date"]::-webkit-datetime-edit-month-field::after {
+    content: "/";
+  }
+  input[type="date"]::-webkit-datetime-edit-day-field::after {
+    content: "";
+  }
+  input[type="checkbox"].chk-custom {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  input[type="checkbox"].chk-custom:checked {
+    background: #ff6b35;
+    border-color: #ff6b35;
+  }
+  input[type="checkbox"].chk-custom:checked::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+    margin-top: -1px;
+  }
+  input[type="checkbox"].chk-custom:disabled {
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  input[type="checkbox"].chk-custom:not(:disabled):hover {
+    border-color: #ff6b35;
+  }
   body {
     @apply bg-background text-foreground;
     zoom: 0.8;
